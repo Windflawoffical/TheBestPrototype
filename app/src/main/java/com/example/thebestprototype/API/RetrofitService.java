@@ -14,7 +14,7 @@ public class RetrofitService {
         initializeRetrofit();
     }
     private void initializeRetrofit() {
-        retrofit = new Retrofit.Builder().baseUrl("http://192.168.1.67:9000")
+        retrofit = new Retrofit.Builder().baseUrl("https://backend-webserver-tbp.onrender.com")
                 .addConverterFactory(GsonConverterFactory.create(new Gson())).build();
 
     }
