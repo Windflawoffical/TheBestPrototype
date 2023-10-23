@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/Location"
+        android:title="Location"
+        android:icon="@drawable/ic_location"/>
+
+    <item
+        android:id="@+id/Signal"
+        android:title="Signal"
+        android:icon="@drawable/ic_signal"/>
+
+    <item
+        android:id="@+id/Camera"
+        android:title="Image"
+        android:icon="@drawable/ic_camera"/>
+    <item
+        android:id="@+id/Logout"
+        android:title="Logout"
+        android:icon="@drawable/ic_logout"/>
+
+</menu>
