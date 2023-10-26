@@ -4,20 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.telephony.CellInfo;
-import android.telephony.CellInfoCdma;
-import android.telephony.CellInfoGsm;
-import android.telephony.CellInfoLte;
-import android.telephony.CellInfoWcdma;
-import android.telephony.CellSignalStrengthCdma;
-import android.telephony.CellSignalStrengthGsm;
-import android.telephony.CellSignalStrengthLte;
-import android.telephony.CellSignalStrengthWcdma;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,21 +15,19 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.thebestprototype.MainActivity;
 import com.example.thebestprototype.R;
+import com.example.thebestprototype.Services.SignalService;
 import com.example.thebestprototype.databinding.FragmentSignalBinding;
 
-import java.util.List;
 
 
 public class SignalFragment extends Fragment {
 
     FragmentSignalBinding fragmentSignalBinding;
-    TelephonyManager telephonyManager;
 
     @Nullable
     @Override
@@ -60,9 +46,18 @@ public class SignalFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        telephonyManager = (TelephonyManager) requireActivity().getSystemService(Context.TELEPHONY_SERVICE);
-
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+
+//        fragmentSignalBinding.getsignalinfobutton.setOnClickListener(v -> {
+//            Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
+//            //intent.setAction("StartSignalService");
+//            getActivity().startService(intent);
+//        });
+
+        fragmentSignalBinding.StopService.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
+            getActivity().stopService(intent);
+        });
 
         fragmentSignalBinding.bottomNavigation.setSelectedItemId(R.id.Signal);
         fragmentSignalBinding.bottomNavigation.setOnItemSelectedListener(item -> {
@@ -86,7 +81,6 @@ public class SignalFragment extends Fragment {
             }
             return false;
         });
-
     }
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
@@ -94,45 +88,19 @@ public class SignalFragment extends Fragment {
             result -> {
                 if (result) {
                     // PERMISSION GRANTED
-                    Log.d("CellSignalStrength", "" + getSignalStrength(telephonyManager));
-//                    fragmentSignalBinding.infoforsignal.setText(getSignalStrength(telephonyManager));
+                    fragmentSignalBinding.getsignalinfobutton.setOnClickListener(v -> {
+                        Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
+                        //intent.setAction("StartSignalService");
+                        getActivity().startService(intent);
+                    });
 
 
                 } else {
                     // PERMISSION NOT GRANTED
-                    Toast.makeText(getActivity().getApplicationContext(), "Permission denied!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Permission denied!", Toast.LENGTH_SHORT).show();
                 }
             }
     );
-
-    private static String getSignalStrength(TelephonyManager telephonyManager) throws SecurityException {
-        String strength = null;
-        List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();   //This will give info of all sims present inside your mobile
-        if(cellInfos != null) {
-            for (int i = 0 ; i < cellInfos.size() ; i++) {
-                if (cellInfos.get(i).isRegistered()) {
-                    if (cellInfos.get(i) instanceof CellInfoWcdma) {
-                        CellInfoWcdma cellInfoWcdma = (CellInfoWcdma) cellInfos.get(i);
-                        CellSignalStrengthWcdma cellSignalStrengthWcdma = cellInfoWcdma.getCellSignalStrength();
-                        strength = String.valueOf(cellSignalStrengthWcdma.getDbm());
-                    } else if (cellInfos.get(i) instanceof CellInfoGsm) {
-                        CellInfoGsm cellInfogsm = (CellInfoGsm) cellInfos.get(i);
-                        CellSignalStrengthGsm cellSignalStrengthGsm = cellInfogsm.getCellSignalStrength();
-                        strength = String.valueOf(cellSignalStrengthGsm.getDbm());
-                    } else if (cellInfos.get(i) instanceof CellInfoLte) {
-                        CellInfoLte cellInfoLte = (CellInfoLte) cellInfos.get(i);
-                        CellSignalStrengthLte cellSignalStrengthLte = cellInfoLte.getCellSignalStrength();
-                        strength = String.valueOf(cellSignalStrengthLte.getDbm());
-                    } else if (cellInfos.get(i) instanceof CellInfoCdma) {
-                        CellInfoCdma cellInfoCdma = (CellInfoCdma) cellInfos.get(i);
-                        CellSignalStrengthCdma cellSignalStrengthCdma = cellInfoCdma.getCellSignalStrength();
-                        strength = String.valueOf(cellSignalStrengthCdma.getDbm());
-                    }
-                }
-            }
-        }
-        return "Your cell signal strength = " + strength;
-    }
 }
 
 

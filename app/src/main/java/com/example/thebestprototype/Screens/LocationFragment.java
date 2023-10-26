@@ -116,7 +116,7 @@ public class LocationFragment extends Fragment {
 
                 } else {
                     // PERMISSION NOT GRANTED
-                    Toast.makeText(getActivity().getApplicationContext(), "Permission denied!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Permission denied!", Toast.LENGTH_SHORT).show();
                 }
             }
     );
