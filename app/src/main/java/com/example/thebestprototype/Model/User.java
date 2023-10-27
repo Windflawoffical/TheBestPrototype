@@ -10,6 +10,7 @@ public class User implements Serializable {
     private String password;
     private double latitude;
     private double longtitude;
+    private int signalpower;
 
     public int getId() {
         return id;
@@ -59,6 +60,14 @@ public class User implements Serializable {
         this.longtitude = longtitude;
     }
 
+    public int getSignalpower() {
+        return signalpower;
+    }
+
+    public void setSignalpower(int signalpower) {
+        this.signalpower = signalpower;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -68,6 +77,7 @@ public class User implements Serializable {
                 ", password='" + password + '\'' +
                 ", latitude=" + latitude +
                 ", longtitude=" + longtitude +
+                ", signalpower=" + signalpower +
                 '}';
     }
 }

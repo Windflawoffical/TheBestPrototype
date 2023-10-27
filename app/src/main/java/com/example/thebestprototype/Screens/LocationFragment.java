@@ -151,8 +151,7 @@ public class LocationFragment extends Fragment {
     private void StopLocationService() {
         if(isLocationServiceRunning()){
             Intent intent = new Intent(getActivity().getApplicationContext(), LocationService.class);
-            intent.setAction("StopLocationService");
-            getActivity().startService(intent);
+            getActivity().stopService(intent);
             Toast.makeText(getActivity().getApplicationContext(), "Location service stopped", Toast.LENGTH_SHORT).show();
         }
     }

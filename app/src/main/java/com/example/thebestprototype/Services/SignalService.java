@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -22,13 +23,24 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import com.example.thebestprototype.API.RetrofitService;
+import com.example.thebestprototype.API.UserAPI;
+import com.example.thebestprototype.Model.User;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class SignalService extends Service {
 
-    final String LOG_TAG = "myLogs";
+    RetrofitService retrofitService = new RetrofitService();
+    UserAPI userAPI = retrofitService.getRetrofit().create(UserAPI.class);
+    SharedPreferences preferences;
+    String email;
+    final String LOG_TAG = "SignalService";
 
     public void onCreate() {
         super.onCreate();
@@ -37,25 +49,42 @@ public class SignalService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(LOG_TAG, "onStartCommand");
-//        if(intent != null){
-//            String action = intent.getAction();
-//            if(action != null){
-//                if(action.equals("StartSignalService")){
-//                    Log.d("Signal", "Signal = " + startSignalService(telephonyManager));
-//                }
-//            }
-//        }
-        Log.d("Signal", "Signal = " + startSignalService(this));
+        if(intent != null){
+
+            preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            email = preferences.getString("Useremail", "defaul@mail.ru");
+            Log.d("Email", "Email = " + email);
+            Log.d("Signal", "Signal = " + getCellSignalPower(this));
+            User user = new User();
+            user.setEmail(email);
+            user.setSignalpower(getCellSignalPower(this));
+            userAPI.updateSignal(user).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    Log.d("Prishlo", "Response = " + response);
+                    if(response.isSuccessful())
+                    {
+                        Log.d("YSPEX", "YSPEX = yspex");
+                    } else {
+                        Log.d("NEYDA4A", "NEYDA4A = NEYDA4A");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Log.d("NEYDA4A", "NEYDA4A = error message " + t);
+                }
+            });
+        }
+
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private String startSignalService(Context context) throws SecurityException {
+    private int getCellSignalPower(Context context) throws SecurityException {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String strength = null;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Log.d("Doshli", "Doshli kone4no");
             List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();   //This will give info of all sims present inside your mobile
-            Log.d("CellInfo", "CellInfo = " + cellInfos);
             if(cellInfos != null) {
                 for (int i = 0 ; i < cellInfos.size() ; i++) {
                     if (cellInfos.get(i).isRegistered()) {
@@ -80,10 +109,11 @@ public class SignalService extends Service {
                 }
             }
         }
-        return "Your cell signal strength = " + strength;
+        return Integer.parseInt(strength);
     }
 
     public void onDestroy() {
+        stopSelf();
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
     }

@@ -19,6 +19,8 @@ public interface UserAPI {
     Call<User> signIn(@Body User user);
     @POST("/user/update-location")
     Call<User> updateLocation(@Body User user);
+    @POST("/user/update-signal")
+    Call<User> updateSignal(@Body User user);
     @GET("/user/get-all")
     Call<List<User>> getAllUsers();
 }

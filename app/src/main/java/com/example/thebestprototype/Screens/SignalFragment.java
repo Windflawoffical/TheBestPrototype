@@ -20,6 +20,7 @@ import androidx.navigation.Navigation;
 
 import com.example.thebestprototype.MainActivity;
 import com.example.thebestprototype.R;
+import com.example.thebestprototype.Services.LocationService;
 import com.example.thebestprototype.Services.SignalService;
 import com.example.thebestprototype.databinding.FragmentSignalBinding;
 
@@ -48,16 +49,7 @@ public class SignalFragment extends Fragment {
 
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 
-//        fragmentSignalBinding.getsignalinfobutton.setOnClickListener(v -> {
-//            Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
-//            //intent.setAction("StartSignalService");
-//            getActivity().startService(intent);
-//        });
-
-        fragmentSignalBinding.StopService.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
-            getActivity().stopService(intent);
-        });
+        fragmentSignalBinding.StopService.setOnClickListener(v -> StopSignalService());
 
         fragmentSignalBinding.bottomNavigation.setSelectedItemId(R.id.Signal);
         fragmentSignalBinding.bottomNavigation.setOnItemSelectedListener(item -> {
@@ -88,11 +80,7 @@ public class SignalFragment extends Fragment {
             result -> {
                 if (result) {
                     // PERMISSION GRANTED
-                    fragmentSignalBinding.getsignalinfobutton.setOnClickListener(v -> {
-                        Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
-                        //intent.setAction("StartSignalService");
-                        getActivity().startService(intent);
-                    });
+                    fragmentSignalBinding.StartService.setOnClickListener(v -> StartSignalService());
 
 
                 } else {
@@ -101,6 +89,18 @@ public class SignalFragment extends Fragment {
                 }
             }
     );
+
+    private void StartSignalService() {
+        Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
+        getActivity().startService(intent);
+        Toast.makeText(getActivity().getApplicationContext(), "Signal service started", Toast.LENGTH_SHORT).show();
+
+    }
+    private void StopSignalService() {
+        Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
+        getActivity().stopService(intent);
+        Toast.makeText(getActivity().getApplicationContext(), "Signal service stopped", Toast.LENGTH_SHORT).show();
+    }
 }
 
 

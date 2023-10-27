@@ -40,8 +40,7 @@ public class LocationService extends Service {
     UserAPI userAPI = retrofitService.getRetrofit().create(UserAPI.class);
     SharedPreferences preferences;
     String email;
-
-
+    final String LOG_TAG = "LocationService";
 
     private final LocationCallback locationCallback = new LocationCallback() {
         @Override
@@ -68,7 +67,7 @@ public class LocationService extends Service {
 
                     @Override
                     public void onFailure(Call<User> call, Throwable t) {
-                        Log.d("NEYDA4A", "NEYDA4A = NEYDA4A");
+                        Log.d("NEYDA4A", "NEYDA4A = error message " + t);
                     }
                 });
                 Log.d("LOCATION_UPDATE", latitude + ", " + longtitude);
@@ -76,6 +75,17 @@ public class LocationService extends Service {
             }
         }
     };
+
+    public void onCreate() {
+        super.onCreate();
+        Log.d(LOG_TAG, "onCreate");
+    }
+
+    public void onDestroy() {
+        stopLocationService();
+        super.onDestroy();
+        Log.d(LOG_TAG, "onDestroy");
+    }
 
     @Nullable
     @Override
@@ -121,18 +131,13 @@ public class LocationService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent != null){
-            String action = intent.getAction();
-            if(action != null){
-                if(action.equals("StartLocationService")){
-                    startLocationService();
-                    preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                    email = preferences.getString("Useremail", "defaul@mail.ru");
-                    Log.d("Email", "Email = " + email);
-                } else if (action.equals("StopLocationService")){
-                    stopLocationService();
-                }
-            }
+        Log.d(LOG_TAG, "onStartCommand");
+        if(intent != null)
+        {
+            startLocationService();
+            preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            email = preferences.getString("Useremail", "defaul@mail.ru");
+            Log.d("Email", "Email = " + email);
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -143,4 +148,5 @@ public class LocationService extends Service {
         intent.putExtra("Longtitude", longtitude);
         sendBroadcast(intent);
     }
+
 }
