@@ -52,6 +52,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/shape"
         android:text="Совершенно другой мир..."
+        android:visibility="gone"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"

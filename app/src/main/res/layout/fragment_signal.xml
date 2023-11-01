@@ -19,49 +19,22 @@
         android:id="@+id/infoforsignal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textStyle="bold"
         android:textSize="25sp"
+        android:textColor="@color/black"
+        android:text="Сервис выключен!"
         android:layout_below="@+id/generalinformation" />
-    <TextView
-        android:id="@+id/signaldescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:layout_below="@+id/infoforsignal" />
-    <TextView
-        android:id="@+id/telecommunicationsoperatorname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:layout_below="@+id/signaldescription" />
-    <TextView
-        android:id="@+id/telecommunicationsoperatornamecode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:layout_below="@+id/telecommunicationsoperatorname" />
-
-    <TextView
-        android:id="@+id/batterycharge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:layout_below="@+id/telecommunicationsoperatornamecode" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:text="Запустить сервис"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:textColor="@color/white"
         android:background="@drawable/shape"
         android:textSize="20sp"
-        android:id="@+id/StartService"
-        android:layout_below="@+id/batterycharge" />
+        android:id="@+id/StartService" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/StopService"
@@ -69,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/StartService"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginTop="15dp"
         android:background="@drawable/shape"
         android:text="Остановить сервис"

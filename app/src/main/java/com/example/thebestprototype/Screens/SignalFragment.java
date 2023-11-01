@@ -1,8 +1,10 @@
 package com.example.thebestprototype.Screens;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,6 +32,14 @@ public class SignalFragment extends Fragment {
 
     FragmentSignalBinding fragmentSignalBinding;
 
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int signal = intent.getIntExtra("Signal", 0);
+            fragmentSignalBinding.infoforsignal.setText(String.valueOf("Ваш уровень сигнала = " + signal));
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,7 +59,10 @@ public class SignalFragment extends Fragment {
 
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
 
-        fragmentSignalBinding.StopService.setOnClickListener(v -> StopSignalService());
+        fragmentSignalBinding.StopService.setOnClickListener(v -> {
+            StopSignalService();
+            fragmentSignalBinding.infoforsignal.setText(String.valueOf("Сервис выключен!"));
+        });
 
         fragmentSignalBinding.bottomNavigation.setSelectedItemId(R.id.Signal);
         fragmentSignalBinding.bottomNavigation.setOnItemSelectedListener(item -> {
@@ -100,6 +113,18 @@ public class SignalFragment extends Fragment {
         Intent intent = new Intent(getActivity().getApplicationContext(), SignalService.class);
         getActivity().stopService(intent);
         Toast.makeText(getActivity().getApplicationContext(), "Signal service stopped", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(receiver, new IntentFilter("GET_SIGNAL"));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(receiver);
     }
 }
 

@@ -50,7 +50,7 @@ public class SignalService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(LOG_TAG, "onStartCommand");
         if(intent != null){
-
+            sendDataToFragment(getCellSignalPower(this));
             preferences = PreferenceManager.getDefaultSharedPreferences(this);
             email = preferences.getString("Useremail", "defaul@mail.ru");
             Log.d("Email", "Email = " + email);
@@ -124,5 +124,11 @@ public class SignalService extends Service {
         Log.d(LOG_TAG, "onBind");
         return null;
 
+    }
+
+    public void sendDataToFragment(int signal){
+        Intent intent = new Intent("GET_SIGNAL"); //FILTER is a string to identify this intent
+        intent.putExtra("Signal", signal);
+        sendBroadcast(intent);
     }
 }
