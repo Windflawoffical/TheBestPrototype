@@ -1,5 +1,6 @@
 package com.example.thebestprototype.Services;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,14 +9,26 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoCdma;
+import android.telephony.CellInfoGsm;
+import android.telephony.CellInfoLte;
+import android.telephony.CellInfoWcdma;
+import android.telephony.CellSignalStrengthCdma;
+import android.telephony.CellSignalStrengthGsm;
+import android.telephony.CellSignalStrengthLte;
+import android.telephony.CellSignalStrengthWcdma;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
 import com.example.thebestprototype.API.RetrofitService;
@@ -30,25 +43,30 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LocationService extends Service {
+public class DataService extends Service {
 
     RetrofitService retrofitService = new RetrofitService();
     UserAPI userAPI = retrofitService.getRetrofit().create(UserAPI.class);
     SharedPreferences preferences;
+    Double latitude = 0.0;
+    Double longtitude = 0.0;
     String email;
-    final String LOG_TAG = "LocationService";
+    final String LOG_TAG = "DataService";
 
     private final LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
+            Log.d("CellSignalPowerUpdate: ", "new - " + getCellSignalPower(DataService.this));
             if(locationResult.getLastLocation() != null){
-                double latitude = locationResult.getLastLocation().getLatitude();
-                double longtitude = locationResult.getLastLocation().getLongitude();
+                latitude = locationResult.getLastLocation().getLatitude();
+                longtitude = locationResult.getLastLocation().getLongitude();
                 User user = new User();
                 user.setEmail(email);
                 user.setLatitude(latitude);
@@ -71,8 +89,8 @@ public class LocationService extends Service {
                     }
                 });
                 Log.d("LOCATION_UPDATE", latitude + ", " + longtitude);
-                sendDataToFragment(latitude, longtitude);
             }
+            sendDataToFragment(latitude, longtitude, getCellSignalPower(DataService.this));
         }
     };
 
@@ -142,11 +160,44 @@ public class LocationService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void sendDataToFragment(double latitude, double longtitude){
+    public void sendDataToFragment(double latitude, double longtitude, int cellsignalpower){
         Intent intent = new Intent("GET_LOCATION"); //FILTER is a string to identify this intent
         intent.putExtra("Latitude", latitude);
         intent.putExtra("Longtitude", longtitude);
+        intent.putExtra("CellSignalPower", cellsignalpower);
         sendBroadcast(intent);
+    }
+
+    private int getCellSignalPower(Context context) throws SecurityException {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String strength = null;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            List<CellInfo> cellInfos = telephonyManager.getAllCellInfo();   //This will give info of all sims present inside your mobile
+            if(cellInfos != null) {
+                for (int i = 0 ; i < cellInfos.size() ; i++) {
+                    if (cellInfos.get(i).isRegistered()) {
+                        if (cellInfos.get(i) instanceof CellInfoWcdma) {
+                            CellInfoWcdma cellInfoWcdma = (CellInfoWcdma) cellInfos.get(i);
+                            CellSignalStrengthWcdma cellSignalStrengthWcdma = cellInfoWcdma.getCellSignalStrength();
+                            strength = String.valueOf(cellSignalStrengthWcdma.getDbm());
+                        } else if (cellInfos.get(i) instanceof CellInfoGsm) {
+                            CellInfoGsm cellInfogsm = (CellInfoGsm) cellInfos.get(i);
+                            CellSignalStrengthGsm cellSignalStrengthGsm = cellInfogsm.getCellSignalStrength();
+                            strength = String.valueOf(cellSignalStrengthGsm.getDbm());
+                        } else if (cellInfos.get(i) instanceof CellInfoLte) {
+                            CellInfoLte cellInfoLte = (CellInfoLte) cellInfos.get(i);
+                            CellSignalStrengthLte cellSignalStrengthLte = cellInfoLte.getCellSignalStrength();
+                            strength = String.valueOf(cellSignalStrengthLte.getDbm());
+                        } else if (cellInfos.get(i) instanceof CellInfoCdma) {
+                            CellInfoCdma cellInfoCdma = (CellInfoCdma) cellInfos.get(i);
+                            CellSignalStrengthCdma cellSignalStrengthCdma = cellInfoCdma.getCellSignalStrength();
+                            strength = String.valueOf(cellSignalStrengthCdma.getDbm());
+                        }
+                    }
+                }
+            }
+        }
+        return Integer.parseInt(strength);
     }
 
 }

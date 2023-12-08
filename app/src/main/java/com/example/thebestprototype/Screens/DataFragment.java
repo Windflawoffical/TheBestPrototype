@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,56 +24,52 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
 import com.example.thebestprototype.MainActivity;
-import com.example.thebestprototype.Model.User;
 import com.example.thebestprototype.R;
-import com.example.thebestprototype.Services.LocationService;
-import com.example.thebestprototype.databinding.FragmentLocationBinding;
+import com.example.thebestprototype.Services.DataService;
+import com.example.thebestprototype.databinding.FragmentDataBinding;
 
-public class LocationFragment extends Fragment {
+public class DataFragment extends Fragment {
 
-    FragmentLocationBinding fragmentLocationBinding;
+    FragmentDataBinding fragmentDataBinding;
 
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            double latitude = intent.getDoubleExtra("Latitude", 1);
-            double longtitude = intent.getDoubleExtra("Longtitude", 5);
-            String latitudestring = String.valueOf(latitude);
-            String longtitudestring = String.valueOf(longtitude);
-            fragmentLocationBinding.latitude.setText(String.valueOf("Широта: " + latitudestring));
-            fragmentLocationBinding.longtitude.setText(String.valueOf("Долгота: " + longtitudestring));
+            double latitude = intent.getDoubleExtra("Latitude", 0);
+            double longtitude = intent.getDoubleExtra("Longtitude", 0);
+            int cellsignalpower = intent.getIntExtra("CellSignalPower", 0);
+            fragmentDataBinding.latitude.setText(String.valueOf("Широта: " + String.valueOf(latitude)));
+            fragmentDataBinding.longtitude.setText(String.valueOf("Долгота: " + String.valueOf(longtitude)));
+            fragmentDataBinding.cellsignalpower.setText(String.valueOf("Уровень сигнала: " + String.valueOf(cellsignalpower)));
         }
     };
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragmentLocationBinding = FragmentLocationBinding.inflate(inflater, container, false);
-        return fragmentLocationBinding.getRoot();
+        fragmentDataBinding = FragmentDataBinding.inflate(inflater, container, false);
+        return fragmentDataBinding.getRoot();
 
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        fragmentLocationBinding = null;
+        fragmentDataBinding = null;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fragmentLocationBinding.bottomNavigation.setSelectedItemId(R.id.Location);
-        fragmentLocationBinding.bottomNavigation.setOnItemSelectedListener(item -> {
+        fragmentDataBinding.bottomNavigation.setSelectedItemId(R.id.Location);
+        fragmentDataBinding.bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.Location:
                     return true;
                 case R.id.Camera:
-                    Navigation.findNavController(view).navigate(R.id.action_locationFragment_to_cameraFragment);
-                    return true;
-                case R.id.Signal:
-                    Navigation.findNavController(view).navigate(R.id.action_locationFragment_to_signalFragment);
+                    Navigation.findNavController(view).navigate(R.id.action_dataFragment_to_cameraFragment);
                     return true;
                 case R.id.Logout:
                     SharedPreferences logout = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
@@ -91,7 +86,7 @@ public class LocationFragment extends Fragment {
 
         LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        fragmentLocationBinding.StartLocationService.setOnClickListener(v -> {
+        fragmentDataBinding.StartLocationService.setOnClickListener(v -> {
             if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
             } else {
@@ -99,10 +94,12 @@ public class LocationFragment extends Fragment {
             }
 
         });
-        fragmentLocationBinding.StopLocationService.setOnClickListener(v -> {
+        fragmentDataBinding.StopLocationService.setOnClickListener(v -> {
             StopLocationService();
-            fragmentLocationBinding.longtitude.setText("");
-            fragmentLocationBinding.latitude.setText("Сервис выключен!");
+            fragmentDataBinding.latitude.setText("Сервис выключен!");
+            fragmentDataBinding.longtitude.setText("");
+            fragmentDataBinding.cellsignalpower.setText("");
+
         });
     }
 
@@ -128,7 +125,7 @@ public class LocationFragment extends Fragment {
         if(activityManager != null){
             for(ActivityManager.RunningServiceInfo serviceInfo:
             activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (LocationService.class.getName().equals(serviceInfo.service.getClassName())) {
+                if (DataService.class.getName().equals(serviceInfo.service.getClassName())) {
                     if(serviceInfo.foreground){
                         return true;
                     }
@@ -142,7 +139,7 @@ public class LocationFragment extends Fragment {
 
     private void StartLocationService() {
         if(!isLocationServiceRunning()){
-            Intent intent = new Intent(getActivity().getApplicationContext(), LocationService.class);
+            Intent intent = new Intent(getActivity().getApplicationContext(), DataService.class);
             intent.setAction("StartLocationService");
             getActivity().startService(intent);
             Toast.makeText(getActivity().getApplicationContext(), "Location service started", Toast.LENGTH_SHORT).show();
@@ -150,13 +147,13 @@ public class LocationFragment extends Fragment {
     }
     private void StopLocationService() {
         if(isLocationServiceRunning()){
-            Intent intent = new Intent(getActivity().getApplicationContext(), LocationService.class);
+            Intent intent = new Intent(getActivity().getApplicationContext(), DataService.class);
             getActivity().stopService(intent);
             Toast.makeText(getActivity().getApplicationContext(), "Location service stopped", Toast.LENGTH_SHORT).show();
         }
     }
     private void showGPSDisabledAlertToUser(){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(fragmentLocationBinding.getRoot().getContext());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(fragmentDataBinding.getRoot().getContext());
         alertDialogBuilder.setMessage("Геолокация на устройстве отключена. Для работы приложения геолокация должна быть включена!")
                 .setCancelable(false)
                 .setPositiveButton("Включить геолокацию",

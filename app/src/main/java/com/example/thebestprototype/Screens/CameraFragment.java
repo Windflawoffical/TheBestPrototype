@@ -44,11 +44,8 @@ public class CameraFragment extends Fragment {
             switch (item.getItemId()) {
                 case R.id.Camera:
                     return true;
-                case R.id.Signal:
-                    Navigation.findNavController(view).navigate(R.id.action_cameraFragment_to_signalFragment);
-                    return true;
                 case R.id.Location:
-                    Navigation.findNavController(view).navigate(R.id.action_cameraFragment_to_locationFragment);
+                    Navigation.findNavController(view).navigate(R.id.action_cameraFragment_to_dataFragment);
                     return true;
                 case R.id.Logout:
                     SharedPreferences logout = requireActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);

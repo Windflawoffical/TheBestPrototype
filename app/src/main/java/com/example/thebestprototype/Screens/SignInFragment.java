@@ -50,7 +50,7 @@ public class SignInFragment extends Fragment {
         SharedPreferences preferences = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
         boolean aBoolean = preferences.getBoolean("Remember", false);
         if(aBoolean){
-            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_locationFragment);
+            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment);
         } else {
             Toast.makeText(getActivity(), "Пожалуйста, войдите в свой аккаунт!", Toast.LENGTH_SHORT).show();
         }
@@ -58,7 +58,7 @@ public class SignInFragment extends Fragment {
         fragmentLoginBinding.adminsignin.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_adminFragment));
 
         fragmentLoginBinding.progressbar.setVisibility(View.GONE);
-        fragmentLoginBinding.loginbutton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_locationFragment));
+        fragmentLoginBinding.loginbutton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment));
         fragmentLoginBinding.signuptext.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_singUpFragment));
 
         RetrofitService retrofitService = new RetrofitService();
@@ -85,7 +85,7 @@ public class SignInFragment extends Fragment {
                                 SharedPreferences sharedPreferencesforuseremail = PreferenceManager.getDefaultSharedPreferences(getActivity());
                                 sharedPreferencesforuseremail.edit().putString("Useremail", response.body().getEmail()).apply();
                                 Toast.makeText(getActivity(), "Авторизация успешна!\nДобро пожаловать: " + response.body().getFullname(), Toast.LENGTH_SHORT).show();
-                                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_locationFragment);
+                                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment);
                                 fragmentLoginBinding.progressbar.setVisibility(View.GONE);
                             } else {
                                 SharedPreferences sharedPreferences = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
@@ -95,7 +95,7 @@ public class SignInFragment extends Fragment {
                                 SharedPreferences sharedPreferencesforuseremail = PreferenceManager.getDefaultSharedPreferences(getActivity());
                                 sharedPreferencesforuseremail.edit().putString("Useremail", response.body().getEmail()).apply();
                                 Toast.makeText(getActivity(), "Авторизация успешна!\nДобро пожаловать: " + response.body().getFullname(), Toast.LENGTH_SHORT).show();
-                                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_locationFragment);
+                                Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment);
                                 fragmentLoginBinding.progressbar.setVisibility(View.GONE);
                             }
                         } else {

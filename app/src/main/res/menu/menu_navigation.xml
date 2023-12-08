@@ -7,11 +7,6 @@
         android:icon="@drawable/ic_location"/>
 
     <item
-        android:id="@+id/Signal"
-        android:title="Signal"
-        android:icon="@drawable/ic_signal"/>
-
-    <item
         android:id="@+id/Camera"
         android:title="Image"
         android:icon="@drawable/ic_camera"/>

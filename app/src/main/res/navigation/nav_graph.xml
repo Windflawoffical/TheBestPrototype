@@ -5,37 +5,12 @@
     app:startDestination="@id/loginFragment">
 
     <fragment
-        android:id="@+id/locationFragment"
-        android:name="com.example.thebestprototype.Screens.LocationFragment"
-        android:label="LocationFragment" >
-        <action
-            android:id="@+id/action_locationFragment_to_signalFragment"
-            app:destination="@id/signalFragment" />
-        <action
-            android:id="@+id/action_locationFragment_to_cameraFragment"
-            app:destination="@id/cameraFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/signalFragment"
-        android:name="com.example.thebestprototype.Screens.SignalFragment"
-        android:label="SignalFragment" >
-        <action
-            android:id="@+id/action_signalFragment_to_cameraFragment"
-            app:destination="@id/cameraFragment" />
-        <action
-            android:id="@+id/action_signalFragment_to_locationFragment"
-            app:destination="@id/locationFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/cameraFragment"
         android:name="com.example.thebestprototype.Screens.CameraFragment"
         android:label="CameraFragment" >
         <action
-            android:id="@+id/action_cameraFragment_to_signalFragment"
-            app:destination="@id/signalFragment" />
-        <action
-            android:id="@+id/action_cameraFragment_to_locationFragment"
-            app:destination="@id/locationFragment" />
+            android:id="@+id/action_cameraFragment_to_dataFragment"
+            app:destination="@id/dataFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -45,11 +20,11 @@
             android:id="@+id/action_loginFragment_to_singUpFragment"
             app:destination="@id/singUpFragment" />
         <action
-            android:id="@+id/action_loginFragment_to_locationFragment"
-            app:destination="@id/locationFragment" />
-        <action
             android:id="@+id/action_loginFragment_to_adminFragment"
             app:destination="@id/adminFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_dataFragment"
+            app:destination="@id/dataFragment" />
     </fragment>
     <fragment
         android:id="@+id/singUpFragment"
@@ -66,5 +41,13 @@
         <action
             android:id="@+id/action_adminFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dataFragment"
+        android:name="com.example.thebestprototype.Screens.DataFragment"
+        android:label="DataFragment" >
+        <action
+            android:id="@+id/action_dataFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
     </fragment>
 </navigation>
