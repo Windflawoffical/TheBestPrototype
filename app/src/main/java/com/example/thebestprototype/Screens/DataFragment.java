@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,7 @@ public class DataFragment extends Fragment {
                 case R.id.Logout:
                     SharedPreferences logout = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
                     logout.edit().clear().apply();
-                    SharedPreferences email = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    SharedPreferences email = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
                     email.edit().clear().apply();
                     Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                     startActivity(intent);

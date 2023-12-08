@@ -50,7 +50,7 @@ public class CameraFragment extends Fragment {
                 case R.id.Logout:
                     SharedPreferences logout = requireActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
                     logout.edit().clear().apply();
-                    SharedPreferences email = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    SharedPreferences email = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
                     email.edit().clear().apply();
                     Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                     startActivity(intent);

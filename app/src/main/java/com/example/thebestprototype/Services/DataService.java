@@ -13,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
@@ -30,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.preference.PreferenceManager;
 
 import com.example.thebestprototype.API.RetrofitService;
 import com.example.thebestprototype.API.UserAPI;
@@ -63,7 +63,7 @@ public class DataService extends Service {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            Log.d("CellSignalPowerUpdate: ", "new - " + getCellSignalPower(DataService.this));
+            Log.d("CellSignalPowerUpdate: ", "CellSignalPower = " + getCellSignalPower(DataService.this));
             if(locationResult.getLastLocation() != null){
                 latitude = locationResult.getLastLocation().getLatitude();
                 longtitude = locationResult.getLastLocation().getLongitude();

@@ -82,7 +82,7 @@ public class SignInFragment extends Fragment {
                                 SharedPreferences.Editor editor = sharedPreferencesforcheckbox.edit();
                                 editor.putBoolean("Remember", true);
                                 editor.apply();
-                                SharedPreferences sharedPreferencesforuseremail = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                SharedPreferences sharedPreferencesforuseremail = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
                                 sharedPreferencesforuseremail.edit().putString("Useremail", response.body().getEmail()).apply();
                                 Toast.makeText(getActivity(), "Авторизация успешна!\nДобро пожаловать: " + response.body().getFullname(), Toast.LENGTH_SHORT).show();
                                 Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment);
@@ -92,7 +92,7 @@ public class SignInFragment extends Fragment {
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putBoolean("Remember", false);
                                 editor.apply();
-                                SharedPreferences sharedPreferencesforuseremail = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                SharedPreferences sharedPreferencesforuseremail = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
                                 sharedPreferencesforuseremail.edit().putString("Useremail", response.body().getEmail()).apply();
                                 Toast.makeText(getActivity(), "Авторизация успешна!\nДобро пожаловать: " + response.body().getFullname(), Toast.LENGTH_SHORT).show();
                                 Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment);
