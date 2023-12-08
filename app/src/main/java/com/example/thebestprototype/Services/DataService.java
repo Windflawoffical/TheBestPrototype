@@ -71,7 +71,8 @@ public class DataService extends Service {
                 user.setEmail(email);
                 user.setLatitude(latitude);
                 user.setLongtitude(longtitude);
-                userAPI.updateLocation(user).enqueue(new Callback<User>() {
+                user.setSignalpower(getCellSignalPower(DataService.this));
+                userAPI.updateData(user).enqueue(new Callback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
                         Log.d("Prishlo", "Response = " + response);
