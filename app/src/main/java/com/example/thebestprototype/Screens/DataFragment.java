@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.preference.PreferenceManager;
 
 import com.example.thebestprototype.MainActivity;
 import com.example.thebestprototype.R;
@@ -32,8 +31,10 @@ import com.example.thebestprototype.databinding.FragmentDataBinding;
 
 public class DataFragment extends Fragment {
 
+
     SharedPreferences logout,
-            preferences;
+            email,
+            datapreferences;
     FragmentDataBinding fragmentDataBinding;
     double latitude;
     double longitude;
@@ -46,22 +47,27 @@ public class DataFragment extends Fragment {
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            //Data preferences for UI from service.
+            datapreferences = getActivity().getSharedPreferences("Data", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editordatapreferences = datapreferences.edit();
             latitude = intent.getDoubleExtra("Latitude", 0);
-            longitude = intent.getDoubleExtra("Longtitude", 0);
+            longitude = intent.getDoubleExtra("Longitude", 0);
             CellSignalPower = intent.getIntExtra("CellSignalPower", 0);
             NetworkOperatorName = intent.getStringExtra("NetworkOperatorName");
             NetworkOperatorCode = intent.getIntExtra("NetworkOperatorCode", 0);
-            preferences.edit().putString("Latitude", String.valueOf(latitude)).apply();
-            preferences.edit().putString("Longtitude", String.valueOf(longitude)).apply();
-            preferences.edit().putString("CellSignalPower", String.valueOf(CellSignalPower)).apply();
-            preferences.edit().putString("NetworkOperatorName", NetworkOperatorName).apply();
-            preferences.edit().putString("NetworkOperatorCode", String.valueOf(NetworkOperatorCode)).apply();
-            fragmentDataBinding.latitude.setText("Широта: " + preferences.getString("Latitude", "defValue"));
-            fragmentDataBinding.longitude.setText("Долгота: " + preferences.getString("Longtitude", "defValue"));
-            fragmentDataBinding.cellsignalpower.setText("Уровень сигнала: " + preferences.getString("CellSignalPower", "defValue"));
-            fragmentDataBinding.NetworkOperatorName.setText("Оператор связи: " + preferences.getString("NetworkOperatorName", "defValue"));
-            fragmentDataBinding.NetworkOperatorCode.setText("MCC + MNC: " + preferences.getString("NetworkOperatorCode", "defValue"));
+            editordatapreferences.putString("Latitude", String.valueOf(latitude));
+            editordatapreferences.putString("Longitude", String.valueOf(longitude));
+            editordatapreferences.putString("CellSignalPower", String.valueOf(CellSignalPower));
+            editordatapreferences.putString("NetworkOperatorName", String.valueOf(NetworkOperatorName));
+            editordatapreferences.putString("NetworkOperatorCode", String.valueOf(NetworkOperatorCode));
+            editordatapreferences.apply();
+
+            fragmentDataBinding.latitude.setText("Широта: " + datapreferences.getString("Latitude", "defValue"));
+            fragmentDataBinding.longitude.setText("Долгота: " + datapreferences.getString("Longitude", "defValue"));
+            fragmentDataBinding.cellsignalpower.setText("Уровень сигнала: " + datapreferences.getString("CellSignalPower", "defValue"));
+            fragmentDataBinding.NetworkOperatorName.setText("Оператор связи: " + datapreferences.getString("NetworkOperatorName", "defValue"));
+            fragmentDataBinding.NetworkOperatorCode.setText("MCC + MNC: " + datapreferences.getString("NetworkOperatorCode", "defValue"));
         }
     };
 
@@ -83,20 +89,19 @@ public class DataFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if(preferences != null) {
-            if(!preferences.getString("Latitude", "defValue").equals("defValue") &&
-                    !preferences.getString("Longtitude", "defValue").equals("defValue") &&
-                    !preferences.getString("CellSignalPower", "defValue").equals("defValue") &&
-                    !preferences.getString("NetworkOperatorName", "defValue").equals("defValue") &&
-                    !preferences.getString("NetworkOperatorCode", "defValue").equals("defValue"))
-            {
-                fragmentDataBinding.latitude.setText("Широта: " + preferences.getString("Latitude", "defValue"));
-                fragmentDataBinding.longitude.setText("Долгота: " + preferences.getString("Longtitude", "defValue"));
-                fragmentDataBinding.cellsignalpower.setText("Уровень сигнала: " + preferences.getString("CellSignalPower", "defValue"));
-                fragmentDataBinding.NetworkOperatorName.setText("Оператор связи: " + preferences.getString("NetworkOperatorName", "defValue"));
-                fragmentDataBinding.NetworkOperatorCode.setText("MCC + MNC: " + preferences.getString("NetworkOperatorCode", "defValue"));
-            }
+        datapreferences = getActivity().getSharedPreferences("Data", Context.MODE_PRIVATE);
+
+        if(!datapreferences.getString("Latitude", "defValue").equals("defValue") &&
+                !datapreferences.getString("Longitude", "defValue").equals("defValue") &&
+                !datapreferences.getString("CellSignalPower", "defValue").equals("defValue") &&
+                !datapreferences.getString("NetworkOperatorName", "defValue").equals("defValue") &&
+                !datapreferences.getString("NetworkOperatorCode", "defValue").equals("defValue"))
+        {
+            fragmentDataBinding.latitude.setText("Широта: " + datapreferences.getString("Latitude", "defValue"));
+            fragmentDataBinding.longitude.setText("Долгота: " + datapreferences.getString("Longitude", "defValue"));
+            fragmentDataBinding.cellsignalpower.setText("Уровень сигнала: " + datapreferences.getString("CellSignalPower", "defValue"));
+            fragmentDataBinding.NetworkOperatorName.setText("Оператор связи: " + datapreferences.getString("NetworkOperatorName", "defValue"));
+            fragmentDataBinding.NetworkOperatorCode.setText("MCC + MNC: " + datapreferences.getString("NetworkOperatorCode", "defValue"));
         }
 
         fragmentDataBinding.bottomNavigation.setSelectedItemId(R.id.Location);
@@ -114,10 +119,16 @@ public class DataFragment extends Fragment {
                     if(isLocationServiceRunning()){
                         StopLocationService();
                     }
-                    preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    preferences.edit().clear().apply();
+
+                    email = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    email.edit().clear().apply();
+
                     logout = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
                     logout.edit().clear().apply();
+
+                    datapreferences = getActivity().getSharedPreferences("Data", Context.MODE_PRIVATE);
+                    datapreferences.edit().clear().apply();
+
                     Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     return true;
@@ -142,8 +153,10 @@ public class DataFragment extends Fragment {
             fragmentDataBinding.cellsignalpower.setText("");
             fragmentDataBinding.NetworkOperatorName.setText("");
             fragmentDataBinding.NetworkOperatorCode.setText("");
-            preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
-            preferences.edit().clear().apply();
+
+            datapreferences = getActivity().getSharedPreferences("Data", Context.MODE_PRIVATE);
+            datapreferences.edit().clear().apply();
+
         });
     }
 

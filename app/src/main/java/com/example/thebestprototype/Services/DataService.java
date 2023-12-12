@@ -78,7 +78,7 @@ public class DataService extends Service {
                 user.setLatitude(latitude);
                 user.setLongtitude(longitude);
                 user.setSignalpower(getCellSignalPower(DataService.this));
-                user.setNetworkOperatorName("NetworkOperatorName");
+                user.setNetworkOperatorName(NetworkOperatorName);
                 user.setNetworkOperatorCode(Integer.parseInt(NetworkOperatorCode));
                 userAPI.updateData(user).enqueue(new Callback<User>() {
                     @Override
@@ -171,7 +171,7 @@ public class DataService extends Service {
     public void sendDataToFragment(double latitude, double longitude, int CellSignalPower, String NetworkOperatorName, int NetworkOperatorCode){
         Intent intent = new Intent("GET_DATA"); //FILTER is a string to identify this intent
         intent.putExtra("Latitude", latitude);
-        intent.putExtra("Longtitude", longitude);
+        intent.putExtra("Longitude", longitude);
         intent.putExtra("CellSignalPower", CellSignalPower);
         intent.putExtra("NetworkOperatorName", NetworkOperatorName);
         intent.putExtra("NetworkOperatorCode", NetworkOperatorCode);

@@ -10,9 +10,7 @@
         android:label="CameraFragment" >
         <action
             android:id="@+id/action_cameraFragment_to_dataFragment"
-            app:destination="@id/dataFragment"
-            app:popUpToInclusive="true"
-            app:popUpTo="@+id/dataFragment"/>
+            app:destination="@id/dataFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
