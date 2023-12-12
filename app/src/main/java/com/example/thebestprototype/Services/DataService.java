@@ -55,7 +55,7 @@ public class DataService extends Service {
     UserAPI userAPI = retrofitService.getRetrofit().create(UserAPI.class);
     SharedPreferences preferences;
     Double latitude = 0.0;
-    Double longtitude = 0.0;
+    Double longitude = 0.0;
     String email;
     final String LOG_TAG = "DataService";
 
@@ -63,15 +63,23 @@ public class DataService extends Service {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
+            TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+            String NetworkOperatorName = telephonyManager.getNetworkOperatorName();
+            String NetworkOperatorCode = telephonyManager.getNetworkOperator();
             Log.d("CellSignalPowerUpdate: ", "CellSignalPower = " + getCellSignalPower(DataService.this));
+            Log.d("NetworkOperatorName: ", "NetworkOperatorName = " + NetworkOperatorName);
+            Log.d("NetworkOperatorCode: ", "NetworkOperatorCode = " + NetworkOperatorCode);
             if(locationResult.getLastLocation() != null){
                 latitude = locationResult.getLastLocation().getLatitude();
-                longtitude = locationResult.getLastLocation().getLongitude();
+                longitude = locationResult.getLastLocation().getLongitude();
+                Log.d("LOCATION_UPDATE", latitude + ", " + longitude);
                 User user = new User();
                 user.setEmail(email);
                 user.setLatitude(latitude);
-                user.setLongtitude(longtitude);
+                user.setLongtitude(longitude);
                 user.setSignalpower(getCellSignalPower(DataService.this));
+                user.setNetworkOperatorName("NetworkOperatorName");
+                user.setNetworkOperatorCode(Integer.parseInt(NetworkOperatorCode));
                 userAPI.updateData(user).enqueue(new Callback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
@@ -89,9 +97,8 @@ public class DataService extends Service {
                         Log.d("NEYDA4A", "NEYDA4A = error message " + t);
                     }
                 });
-                Log.d("LOCATION_UPDATE", latitude + ", " + longtitude);
             }
-            sendDataToFragment(latitude, longtitude, getCellSignalPower(DataService.this));
+            sendDataToFragment(latitude, longitude, getCellSignalPower(DataService.this), NetworkOperatorName, Integer.parseInt(NetworkOperatorCode));
         }
     };
 
@@ -161,11 +168,13 @@ public class DataService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void sendDataToFragment(double latitude, double longtitude, int cellsignalpower){
-        Intent intent = new Intent("GET_LOCATION"); //FILTER is a string to identify this intent
+    public void sendDataToFragment(double latitude, double longitude, int CellSignalPower, String NetworkOperatorName, int NetworkOperatorCode){
+        Intent intent = new Intent("GET_DATA"); //FILTER is a string to identify this intent
         intent.putExtra("Latitude", latitude);
-        intent.putExtra("Longtitude", longtitude);
-        intent.putExtra("CellSignalPower", cellsignalpower);
+        intent.putExtra("Longtitude", longitude);
+        intent.putExtra("CellSignalPower", CellSignalPower);
+        intent.putExtra("NetworkOperatorName", NetworkOperatorName);
+        intent.putExtra("NetworkOperatorCode", NetworkOperatorCode);
         sendBroadcast(intent);
     }
 

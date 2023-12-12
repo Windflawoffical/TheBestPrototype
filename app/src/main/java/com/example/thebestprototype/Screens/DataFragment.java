@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,26 +22,46 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
 import com.example.thebestprototype.MainActivity;
 import com.example.thebestprototype.R;
 import com.example.thebestprototype.Services.DataService;
 import com.example.thebestprototype.databinding.FragmentDataBinding;
 
+
 public class DataFragment extends Fragment {
 
+    SharedPreferences logout,
+            preferences;
     FragmentDataBinding fragmentDataBinding;
+    double latitude;
+    double longitude;
+    int CellSignalPower;
+    String NetworkOperatorName;
+    int NetworkOperatorCode;
+
 
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            double latitude = intent.getDoubleExtra("Latitude", 0);
-            double longtitude = intent.getDoubleExtra("Longtitude", 0);
-            int cellsignalpower = intent.getIntExtra("CellSignalPower", 0);
-            fragmentDataBinding.latitude.setText(String.valueOf("Широта: " + String.valueOf(latitude)));
-            fragmentDataBinding.longtitude.setText(String.valueOf("Долгота: " + String.valueOf(longtitude)));
-            fragmentDataBinding.cellsignalpower.setText(String.valueOf("Уровень сигнала: " + String.valueOf(cellsignalpower)));
+            preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
+            latitude = intent.getDoubleExtra("Latitude", 0);
+            longitude = intent.getDoubleExtra("Longtitude", 0);
+            CellSignalPower = intent.getIntExtra("CellSignalPower", 0);
+            NetworkOperatorName = intent.getStringExtra("NetworkOperatorName");
+            NetworkOperatorCode = intent.getIntExtra("NetworkOperatorCode", 0);
+            preferences.edit().putString("Latitude", String.valueOf(latitude)).apply();
+            preferences.edit().putString("Longtitude", String.valueOf(longitude)).apply();
+            preferences.edit().putString("CellSignalPower", String.valueOf(CellSignalPower)).apply();
+            preferences.edit().putString("NetworkOperatorName", NetworkOperatorName).apply();
+            preferences.edit().putString("NetworkOperatorCode", String.valueOf(NetworkOperatorCode)).apply();
+            fragmentDataBinding.latitude.setText("Широта: " + preferences.getString("Latitude", "defValue"));
+            fragmentDataBinding.longitude.setText("Долгота: " + preferences.getString("Longtitude", "defValue"));
+            fragmentDataBinding.cellsignalpower.setText("Уровень сигнала: " + preferences.getString("CellSignalPower", "defValue"));
+            fragmentDataBinding.NetworkOperatorName.setText("Оператор связи: " + preferences.getString("NetworkOperatorName", "defValue"));
+            fragmentDataBinding.NetworkOperatorCode.setText("MCC + MNC: " + preferences.getString("NetworkOperatorCode", "defValue"));
         }
     };
 
@@ -64,6 +83,22 @@ public class DataFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if(preferences != null) {
+            if(!preferences.getString("Latitude", "defValue").equals("defValue") &&
+                    !preferences.getString("Longtitude", "defValue").equals("defValue") &&
+                    !preferences.getString("CellSignalPower", "defValue").equals("defValue") &&
+                    !preferences.getString("NetworkOperatorName", "defValue").equals("defValue") &&
+                    !preferences.getString("NetworkOperatorCode", "defValue").equals("defValue"))
+            {
+                fragmentDataBinding.latitude.setText("Широта: " + preferences.getString("Latitude", "defValue"));
+                fragmentDataBinding.longitude.setText("Долгота: " + preferences.getString("Longtitude", "defValue"));
+                fragmentDataBinding.cellsignalpower.setText("Уровень сигнала: " + preferences.getString("CellSignalPower", "defValue"));
+                fragmentDataBinding.NetworkOperatorName.setText("Оператор связи: " + preferences.getString("NetworkOperatorName", "defValue"));
+                fragmentDataBinding.NetworkOperatorCode.setText("MCC + MNC: " + preferences.getString("NetworkOperatorCode", "defValue"));
+            }
+        }
+
         fragmentDataBinding.bottomNavigation.setSelectedItemId(R.id.Location);
         fragmentDataBinding.bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -73,13 +108,18 @@ public class DataFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_dataFragment_to_cameraFragment);
                     return true;
                 case R.id.Logout:
-                    SharedPreferences logout = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
+                    if(isLocationServiceRunning()){
+                        Log.d("RABOTAET", "RABOTAET" + "VNATYRE");
+                    }
+                    if(isLocationServiceRunning()){
+                        StopLocationService();
+                    }
+                    preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    preferences.edit().clear().apply();
+                    logout = getActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
                     logout.edit().clear().apply();
-                    SharedPreferences email = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    email.edit().clear().apply();
                     Intent intent = new Intent(getActivity().getApplicationContext(), MainActivity.class);
                     startActivity(intent);
-                    StopLocationService();
                     return true;
             }
             return false;
@@ -98,9 +138,12 @@ public class DataFragment extends Fragment {
         fragmentDataBinding.StopLocationService.setOnClickListener(v -> {
             StopLocationService();
             fragmentDataBinding.latitude.setText("Сервис выключен!");
-            fragmentDataBinding.longtitude.setText("");
+            fragmentDataBinding.longitude.setText("");
             fragmentDataBinding.cellsignalpower.setText("");
-
+            fragmentDataBinding.NetworkOperatorName.setText("");
+            fragmentDataBinding.NetworkOperatorCode.setText("");
+            preferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity());
+            preferences.edit().clear().apply();
         });
     }
 
@@ -172,7 +215,7 @@ public class DataFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().registerReceiver(receiver, new IntentFilter("GET_LOCATION"));
+        getActivity().registerReceiver(receiver, new IntentFilter("GET_DATA"));
     }
 
     @Override

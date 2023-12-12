@@ -11,6 +11,8 @@ public class User implements Serializable {
     private double latitude;
     private double longtitude;
     private int signalpower;
+    private String NetworkOperatorName;
+    private int NetworkOperatorCode;
 
     public int getId() {
         return id;
@@ -68,6 +70,22 @@ public class User implements Serializable {
         this.signalpower = signalpower;
     }
 
+    public String getNetworkOperatorName() {
+        return NetworkOperatorName;
+    }
+
+    public void setNetworkOperatorName(String networkOperatorName) {
+        NetworkOperatorName = networkOperatorName;
+    }
+
+    public int getNetworkOperatorCode() {
+        return NetworkOperatorCode;
+    }
+
+    public void setNetworkOperatorCode(int networkOperatorCode) {
+        NetworkOperatorCode = networkOperatorCode;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -78,6 +96,8 @@ public class User implements Serializable {
                 ", latitude=" + latitude +
                 ", longtitude=" + longtitude +
                 ", signalpower=" + signalpower +
+                ", NetworkOperatorName='" + NetworkOperatorName + '\'' +
+                ", NetworkOperatorCode=" + NetworkOperatorCode +
                 '}';
     }
 }
