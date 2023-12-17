@@ -55,8 +55,6 @@ public class SignInFragment extends Fragment {
             Toast.makeText(getActivity(), "Пожалуйста, войдите в свой аккаунт!", Toast.LENGTH_SHORT).show();
         }
 
-        fragmentLoginBinding.adminsignin.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_adminFragment));
-
         fragmentLoginBinding.progressbar.setVisibility(View.GONE);
         fragmentLoginBinding.loginbutton.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_dataFragment));
         fragmentLoginBinding.signuptext.setOnClickListener(v -> Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_singUpFragment));

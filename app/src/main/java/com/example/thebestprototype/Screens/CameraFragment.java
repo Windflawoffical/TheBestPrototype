@@ -4,14 +4,18 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -43,6 +47,7 @@ public class CameraFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         fragmentCameraBinding.bottomNavigation.setSelectedItemId(R.id.Camera);
         fragmentCameraBinding.bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -52,10 +57,10 @@ public class CameraFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_cameraFragment_to_dataFragment);
                     return true;
                 case R.id.Logout:
-                    if(isLocationServiceRunning()){
+                    if (isLocationServiceRunning()) {
                         Log.d("RABOTAET", "RABOTAET" + "VNATYRE");
                     }
-                    if(isLocationServiceRunning()){
+                    if (isLocationServiceRunning()) {
                         StopLocationService();
                     }
                     SharedPreferences logout = requireActivity().getSharedPreferences("Checkbox", Context.MODE_PRIVATE);
@@ -68,7 +73,25 @@ public class CameraFragment extends Fragment {
             }
             return false;
         });
+        fragmentCameraBinding.gotoattachments.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_cameraFragment_to_attachmentsFragment);
+        });
+
+
+        fragmentCameraBinding.addphoto.setOnClickListener(v -> galleryActivityLauncher.launch(new String[]{"image/*"}));
     }
+
+    ActivityResultLauncher<String[]> galleryActivityLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), new ActivityResultCallback<Uri>() {
+        @Override
+        public void onActivityResult(Uri result) {
+            if (result != null) {
+                fragmentCameraBinding.addphoto.setImageURI(result);
+            } else {
+                Log.d("Result", "onActivityResult: the result is null for some reason");
+            }
+        }
+    });
+
     private boolean isLocationServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         if(activityManager != null){
